@@ -1,2 +1,3 @@
 # elixir.kak
-Elixir plugin for kakoune
+
+A plugin I use to override the default elixir configuration in kakoune
