@@ -72,39 +72,4 @@ provide-module -override elixir %§
             try %{ execute-keys -draft <semicolon> k x <a-k> ^.+(\bdo|->)$ <ret> j <a-gt> }
         }
     }
-
-    define-command -hidden -docstring 'run tests in current file' test-current-ex %{ evaluate-commands %sh{
-        # Create a temporary fifo for communication
-        output=$(mktemp -d "${TMPDIR:-/tmp}"/kak-test-ex.XXXXXXXX)/fifo
-        file="$kak_buffile"
-        mkfifo ${output}
-
-        # run command detached from the shell
-        ( mix test --no-color -- "$file" > ${output} 2>&1 & ) > /dev/null 2>&1 < /dev/null
-
-        # open in client
-        printf %s\\n "evaluate-commands -try-client '$kak_opt_toolsclient' %{
-           edit! -fifo ${output} *test*
-           set-option buffer filetype test
-           set-option buffer test_current_line 0
-           hook -always -once buffer BufCloseFifo .* %{ nop %sh{ rm -r $(dirname ${output}) } }
-        }"
-    } }
-
-    define-command -hidden -docstring 'execute tests in current working directory' test-ex %{ evaluate-commands %sh{
-        # Create a temporary fifo for communication
-        output=$(mktemp -d "${TMPDIR:-/tmp}"/kak-test-ex.XXXXXXXX)/fifo
-        mkfifo ${output}
-
-        # run command detached from the shell
-        ( mix test --no-color  > ${output} 2>&1 & ) > /dev/null 2>&1 < /dev/null
-
-        # open in client
-        printf %s\\n "evaluate-commands -try-client '$kak_opt_toolsclient' %{
-           edit! -fifo ${output} *test*
-           set-option buffer filetype test
-           set-option buffer test_current_line 0
-           hook -always -once buffer BufCloseFifo .* %{ nop %sh{ rm -r $(dirname ${output}) } }
-        }"
-    } }
 §
