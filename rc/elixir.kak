@@ -3,6 +3,14 @@ hook global WinSetOption filetype=elixir %{
     alias window test test-ex
 }
 
+hook global WinSetOption filetype=(eex) %{
+    require-module eex
+
+    hook window ModeChange pop:insert:.* -group "%val{hook_param_capture_1}-trim-indent"  html-trim-indent
+    hook window InsertChar '>' -group "%val{hook_param_capture_1}-indent" html-indent-on-greater-than
+    hook window InsertChar \n -group "%val{hook_param_capture_1}-indent" html-indent-on-new-line
+}
+
 provide-module -override eex %§
     require-module html
     require-module elixir
